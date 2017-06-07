@@ -4,15 +4,16 @@ import { connect } from "react-redux";
 import {
   Card,
   CardTitle,
-  CardBlock,
   Form,
   Input,
   Button,
   FormGroup,
   FormFeedback
 } from "reactstrap";
-import { getLoginErrors } from "../../reducers/login";
-import loginActions from "../../actions/login";
+import { getLoginErrors } from "../../reducers/auth";
+import loginActions from "../../actions/auth";
+
+import "./LoginForm.css";
 
 type Error = {
   +field: string,
@@ -21,7 +22,7 @@ type Error = {
 
 type Props = {
   +errors: Array<Error>,
-  +loginUser: (username: string, password: string) => void
+  +authenticate: (username: string, password: string) => void
 };
 
 type State = {
@@ -43,7 +44,7 @@ class LoginForm extends React.Component {
   };
 
   onLoginClick = () => {
-    this.props.loginUser(this.state.username, this.state.password);
+    this.props.authenticate(this.state.username, this.state.password);
   };
 
   getFieldError = (field: string): ?Error =>
@@ -61,45 +62,41 @@ class LoginForm extends React.Component {
 
   render = () => {
     return (
-      <Card>
-        <CardBlock>
-          <CardTitle>Login</CardTitle>
+      <Card className="login-form" inverse block>
+        <CardTitle className="text-center">Welcome!</CardTitle>
 
-          <Form>
-            <FormGroup color={this.getFieldErrorState("username")}>
-              <Input
-                state={this.getFieldErrorState("username")}
-                name="username"
-                placeholder="Username"
-                value={this.state.username}
-                onChange={this.handleInputChange}
-              />
-              <FormFeedback>
-                {this.getFieldErrorMessage("username")}
-              </FormFeedback>
-            </FormGroup>
+        <Form>
+          <FormGroup color={this.getFieldErrorState("username")}>
+            <Input
+              state={this.getFieldErrorState("username")}
+              name="username"
+              placeholder="Username"
+              value={this.state.username}
+              onChange={this.handleInputChange}
+            />
+            <FormFeedback className="text-left">
+              {this.getFieldErrorMessage("username")}
+            </FormFeedback>
+          </FormGroup>
 
-            <FormGroup color={this.getFieldErrorState("password")}>
-              <Input
-                state={this.getFieldErrorState("password")}
-                name="password"
-                placeholder="Password"
-                value={this.state.password}
-                onChange={this.handleInputChange}
-                type="password"
-              />
-              <FormFeedback>
-                {this.getFieldErrorMessage("password")}
-              </FormFeedback>
-            </FormGroup>
+          <FormGroup color={this.getFieldErrorState("password")}>
+            <Input
+              state={this.getFieldErrorState("password")}
+              name="password"
+              placeholder="Password"
+              value={this.state.password}
+              onChange={this.handleInputChange}
+              type="password"
+            />
+            <FormFeedback className="text-left">
+              {this.getFieldErrorMessage("password")}
+            </FormFeedback>
+          </FormGroup>
 
-            <FormGroup>
-              <Button onClick={this.onLoginClick} block color="primary">
-                Login
-              </Button>
-            </FormGroup>
-          </Form>
-        </CardBlock>
+          <Button onClick={this.onLoginClick} block color="primary">
+            Login
+          </Button>
+        </Form>
       </Card>
     );
   };
@@ -110,7 +107,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  loginUser: loginActions.loginUser
+  authenticate: loginActions.authenticate
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);

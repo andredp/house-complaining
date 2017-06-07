@@ -8,33 +8,33 @@ type Error = {
 };
 
 type State = {
-  +auth_key: string,
+  +auth_token: string,
   +isLoggedIn: boolean,
   +errors: Array<Error>
 };
 
 const initialState: State = {
-  auth_key: "",
+  auth_token: "",
   isLoggedIn: false,
   errors: []
 };
 
 export default handleActions(
   {
-    LOGIN_USER_PENDING: () => {},
+    AUTHENTICATE_PENDING: () => {},
 
-    LOGIN_USER_FULFILLED: (state: State, action): State => {
+    AUTHENTICATE_FULFILLED: (state: State, action): State => {
       const auth_token = action.payload.data.access_token;
       axios.defaults.headers.common["Authorization"] = auth_token;
 
       return {
-        auth_key: auth_token,
         isLoggedIn: true,
+        auth_token,
         errors: []
       };
     },
 
-    LOGIN_USER_REJECTED: (state: State, action): State => ({
+    AUTHENTICATE_REJECTED: (state: State, action): State => ({
       ...state,
       errors: action.payload.response.data
     })
@@ -43,8 +43,8 @@ export default handleActions(
 );
 
 type Store = {
-  login: State
+  auth: State
 };
 
-export const getLoginErrors = (state: Store) => state.login.errors;
-export const getIsLoggedIn = (state: Store) => state.login.isLoggedIn;
+export const getLoginErrors = (state: Store) => state.auth.errors;
+export const getIsLoggedIn = (state: Store) => state.auth.isLoggedIn;

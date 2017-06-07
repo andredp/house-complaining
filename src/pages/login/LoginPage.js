@@ -2,10 +2,11 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
-import { Container, Col, Row } from "reactstrap";
-import { getIsLoggedIn } from "../../reducers/login";
+import { getIsLoggedIn } from "../../reducers/auth";
 import LoginForm from "../../components/login-form";
 import BasePage from "../base/BasePage";
+
+import "./LoginPage.css";
 
 const LoginPage = props => {
   // If user is logged in, redirects it...
@@ -16,13 +17,9 @@ const LoginPage = props => {
 
   return (
     <BasePage>
-      <Container>
-        <Row>
-          <Col md={{ size: 8, push: 2 }}>
-            <LoginForm />
-          </Col>
-        </Row>
-      </Container>
+      <div className="login-form-wrapper">
+        <LoginForm />
+      </div>
     </BasePage>
   );
 };

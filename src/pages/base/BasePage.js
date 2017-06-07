@@ -1,5 +1,15 @@
 // @flow
 import React from "react";
+import { Link } from "react-router-dom";
+import FontAwesome from "react-fontawesome";
+import {
+  Navbar,
+  Nav,
+  NavItem,
+  NavbarBrand,
+  NavbarToggler,
+  Collapse
+} from "reactstrap";
 
 import "./BasePage.css";
 
@@ -9,36 +19,42 @@ type Props = {
 
 const BasePage = (props: Props) =>
   <div className="site-wrapper">
-    <div className="site-wrapper-inner">
-      <div className="cover-container">
-
-        <div className="masthead clearfix">
-          <div className="inner">
-            <h3 className="masthead-brand">Cover</h3>
-            <nav className="nav nav-masthead">
-              <a className="nav-link active" href="#">Home</a>
-              <a className="nav-link" href="#">Features</a>
-              <a className="nav-link" href="#">Contact</a>
-            </nav>
-          </div>
-        </div>
-
-        <div className="inner cover">
-          {props.children}
-        </div>
-
-        <div className="mastfoot">
-          <div className="inner">
-            <p>
-              Cover template for
-              {" "}<a href="https://getbootstrap.com">Bootstrap</a>, by
-              {" "}<a href="https://twitter.com/mdo">@mdo</a>.
-            </p>
-          </div>
-        </div>
-
-      </div>
-    </div>
+    <header>
+      <AppNavbar />
+    </header>
+    {props.children}
   </div>;
+
+class AppNavbar extends React.Component {
+  state = {
+    isOpen: false
+  };
+
+  toggle = () => {
+    this.setState({ isOpen: !this.state.isOpen });
+  };
+
+  render = () =>
+    <Navbar toggleable="sm" inverse color="inverse">
+      <NavbarToggler right onClick={this.toggle} />
+      <NavbarBrand className="app-logo" href="/">
+        <FontAwesome name="cog" spin size="2x" />
+        <span className="app-name">House App</span>
+      </NavbarBrand>
+      <Collapse isOpen={this.state.isOpen} navbar>
+        <Nav className="ml-auto" navbar>
+          <NavItem className="active">
+            <Link to="/" className="nav-link">Home</Link>
+          </NavItem>
+          <NavItem>
+            <Link to="/" className="nav-link">Link 1</Link>
+          </NavItem>
+          <NavItem>
+            <Link to="/" className="nav-link">Link 2</Link>
+          </NavItem>
+        </Nav>
+      </Collapse>
+    </Navbar>;
+}
 
 export default BasePage;
