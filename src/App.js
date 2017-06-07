@@ -1,22 +1,20 @@
 // @flow
-import React, { Component } from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import React from "react";
+import { BrowserRouter, Route } from "react-router-dom";
+import PrivateRoute from "./components/routes/PrivateRoute";
+import LoginPage from "./pages/login";
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
-}
+//TODO: remove
+import { Button } from "reactstrap";
+
+const App = () =>
+  <BrowserRouter>
+    <div>
+      <Route path="/login" component={LoginPage} />
+      <PrivateRoute exact={true} path="/" component={Button} />
+      <PrivateRoute path="/teste" component={Button} />
+      <PrivateRoute path="/ola" component={Button} />
+    </div>
+  </BrowserRouter>;
 
 export default App;

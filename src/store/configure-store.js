@@ -1,12 +1,12 @@
-// @flow
 import rootReducer from "../reducers";
-import { createStore, compose } from "redux";
+import { createStore, applyMiddleware } from "redux";
+import { composeWithDevTools } from "redux-devtools-extension/developmentOnly";
+import promiseMiddleware from "redux-promise-middleware";
+import loggerMiddleware from "./logger";
 
-// enable redux devtools... can this be done with Webpack instead?
-const enhancers = compose(
-  window.devToolsExtension ? window.devToolsExtension() : f => f
-);
-
-export default initialState => {
-  return createStore(rootReducer, initialState, enhancers);
-};
+export default initialState =>
+  createStore(
+    rootReducer,
+    initialState,
+    composeWithDevTools(applyMiddleware(loggerMiddleware, promiseMiddleware()))
+  );

@@ -1,17 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import axios from "axios";
+import WebAPI from "./utils/WebAPI";
 
 import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/css/bootstrap-theme.css";
 
 import registerServiceWorker from "./registerServiceWorker";
 import configureStore from "./store/configure-store";
 
 import App from "./App";
-import "./index.css";
 
-const store = configureStore();
+axios.defaults.baseURL = WebAPI.HOST;
+
+const initialStore = {};
+const store = configureStore(initialStore);
 
 ReactDOM.render(
   <Provider store={store}>
@@ -19,4 +22,5 @@ ReactDOM.render(
   </Provider>,
   document.getElementById("root")
 );
+
 registerServiceWorker();

@@ -1,8 +1,9 @@
 // @flow
+import { handleActions } from "redux-actions";
 
-export default (state = [], action) => {
-  switch (action.type) {
-    default:
-      return state;
-  }
-};
+export default handleActions(
+  {
+    ADD_COMPLAINT: (state, action) => [...state, action.payload]
+  },
+  []
+);

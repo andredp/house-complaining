@@ -1,9 +1,9 @@
 // @flow
 import { combineReducers } from "redux";
-import complaints from "complaints";
+import complaints from "./complaints";
+import login from "./login";
 
-const rootReducer = combineReducers({
-  complaints
+export default combineReducers({
+  complaints,
+  login
 });
-
-export default rootReducer;
