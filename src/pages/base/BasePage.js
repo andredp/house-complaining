@@ -1,33 +1,26 @@
 // @flow
-import React from "react";
-import { Link } from "react-router-dom";
-import FontAwesome from "react-fontawesome";
-import {
-  Navbar,
-  Nav,
-  NavItem,
-  NavbarBrand,
-  NavbarToggler,
-  Collapse
-} from "reactstrap";
+import React from 'react';
+import { Link } from 'react-router';
+import FontAwesome from 'react-fontawesome';
+import { Navbar, Nav, NavItem, NavLink, NavbarBrand, NavbarToggler, Collapse } from 'reactstrap';
 
-import "./BasePage.css";
+import './BasePage.css';
 
 type Props = {
-  +children: any
+  +children: any,
 };
 
 const BasePage = (props: Props) =>
-  <div className="site-wrapper">
+  (<div className="site-wrapper">
     <header>
       <AppNavbar />
     </header>
     {props.children}
-  </div>;
+  </div>);
 
 class AppNavbar extends React.Component {
   state = {
-    isOpen: false
+    isOpen: false,
   };
 
   toggle = () => {
@@ -35,7 +28,7 @@ class AppNavbar extends React.Component {
   };
 
   render = () =>
-    <Navbar toggleable="sm" inverse color="inverse">
+    (<Navbar toggleable="sm" inverse color="inverse">
       <NavbarToggler right onClick={this.toggle} />
       <NavbarBrand className="app-logo" href="/">
         <FontAwesome name="cog" spin size="2x" />
@@ -44,17 +37,17 @@ class AppNavbar extends React.Component {
       <Collapse isOpen={this.state.isOpen} navbar>
         <Nav className="ml-auto" navbar>
           <NavItem className="active">
-            <Link to="/" className="nav-link">Home</Link>
+            <NavLink tag={Link} to="/">Base</NavLink>
           </NavItem>
           <NavItem>
-            <Link to="/" className="nav-link">Link 1</Link>
+            <NavLink tag={Link} to="/login">Login</NavLink>
           </NavItem>
           <NavItem>
-            <Link to="/" className="nav-link">Link 2</Link>
+            <NavLink tag={Link} to="/home">Home</NavLink>
           </NavItem>
         </Nav>
       </Collapse>
-    </Navbar>;
+    </Navbar>);
 }
 
 export default BasePage;

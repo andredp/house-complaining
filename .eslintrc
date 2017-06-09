@@ -1,3 +1,24 @@
 {
-  "extends": "react-app"
+  "parser": "babel-eslint",
+  "extends": [
+    "airbnb",
+    "plugin:flowtype/recommended"
+  ],
+  "ecmaFeatures": {
+    "jsx": true,
+    "modules": true
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+  },
+  "rules": {
+    "react/jsx-filename-extension": "off",
+    "react/sort-comp": "off"
+  },
+  "plugins": [
+    "react",
+    "babel",
+    "flowtype"
+  ]
 }
