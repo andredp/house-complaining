@@ -1,43 +1,16 @@
 // @flow
-import { getIsAuthenticating, getAuthToken, getUsername } from '../reducers';
-import WebAPI from '../utils/WebAPI';
-import type { ThunkAction } from './types';
+import type { Action } from './types';
 
-export const authenticate = (username: string, password: string): ThunkAction => (
-  dispatch,
-  getState,
-) => {
-  if (getIsAuthenticating(getState())) {
-    return Promise.resolve();
-  }
+export const authenticate = (username: string, password: string): Action => ({
+  type: 'AUTH_LOGIN',
+  payload: { username, password },
+});
 
-  dispatch({ type: 'AUTHENTICATE_PENDING' });
+export const validate = (token: string): Action => ({
+  type: 'AUTH_VALIDATE',
+  payload: token,
+});
 
-  return WebAPI.authenticate(username, password).then(
-    (response: Promise<*>) => {
-      dispatch({
-        type: 'AUTHENTICATE_FULFILLED',
-        payload: { response, username },
-      });
-      // store the token on the localStorage
-      localStorage.setItem('auth.token', getAuthToken(getState()));
-      localStorage.setItem('auth.username', getUsername(getState()));
-      WebAPI.setAuthenticationToken(getAuthToken(getState()));
-    },
-    (error: Promise<*>) => {
-      dispatch({
-        type: 'AUTHENTICATE_REJECTED',
-        payload: error,
-      });
-    },
-  );
-};
-
-export const logout = () => {
-  localStorage.removeItem('auth.token');
-  localStorage.removeItem('auth.username');
-  WebAPI.setAuthenticationToken('');
-  return {
-    type: 'LOGOUT',
-  };
-};
+export const logout = (): Action => ({
+  type: 'AUTH_LOGOUT',
+});

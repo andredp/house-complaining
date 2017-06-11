@@ -2,9 +2,9 @@
 import { combineReducers } from 'redux';
 import type { Action } from '../actions/types';
 
-type Error = {
-  field: string,
-  message: string,
+export type Error = {
+  +field: string,
+  +message: string,
 };
 
 export type AuthState = {
@@ -14,26 +14,26 @@ export type AuthState = {
   +isAuthenticating: boolean,
 };
 
-// TODO: check validation with server
-const usernameInitialState = localStorage.getItem('auth.username') || '';
-const username = (state = usernameInitialState, action: Action): string => {
+const username = (state = '', action: Action): string => {
   switch (action.type) {
-    case 'AUTHENTICATE_FULFILLED':
+    case 'AUTH_LOGIN_SUCCESS':
+    case 'AUTH_VALIDATE_SUCCESS':
       return action.payload.username;
-    case 'LOGOUT':
+    case 'AUTH_VALIDATE_FAILED':
+    case 'AUTH_LOGOUT':
       return '';
     default:
       return state;
   }
 };
 
-// TODO: check validation with server
-const tokenInitialState = localStorage.getItem('auth.token') || '';
-const token = (state = tokenInitialState, action: Action): string => {
+const token = (state = '', action: Action): string => {
   switch (action.type) {
-    case 'AUTHENTICATE_FULFILLED':
-      return action.payload.response.data.access_token;
-    case 'LOGOUT':
+    case 'AUTH_LOGIN_SUCCESS':
+    case 'AUTH_VALIDATE_SUCCESS':
+      return action.payload.token;
+    case 'AUTH_VALIDATE_FAILED':
+    case 'AUTH_LOGOUT':
       return '';
     default:
       return state;
@@ -42,14 +42,9 @@ const token = (state = tokenInitialState, action: Action): string => {
 
 const errors = (state = [], action: Action): Array<Error> => {
   switch (action.type) {
-    case 'AUTHENTICATE_REJECTED':
-      // TODO: Maybe make it a global error?
-      if (typeof action.payload.response === 'undefined') {
-        return [{ field: 'password', message: action.payload.message }];
-      }
-      return action.payload.response.data;
-    case 'AUTHENTICATE_PENDING':
-    case 'AUTHENTICATE_FULFILLED':
+    case 'AUTH_LOGIN_FAILED':
+      return action.payload;
+    case 'AUTH_LOGIN':
       return [];
     default:
       return state;
@@ -58,10 +53,13 @@ const errors = (state = [], action: Action): Array<Error> => {
 
 const isAuthenticating = (state = false, action: Action): boolean => {
   switch (action.type) {
-    case 'AUTHENTICATE_PENDING':
+    case 'AUTH_LOGIN':
+    case 'AUTH_VALIDATE':
       return true;
-    case 'AUTHENTICATE_FULFILLED':
-    case 'AUTHENTICATE_REJECTED':
+    case 'AUTH_LOGIN_SUCCESS':
+    case 'AUTH_LOGIN_FAILED':
+    case 'AUTH_VALIDATE_SUCCESS':
+    case 'AUTH_VALIDATE_FAILED':
       return false;
     default:
       return state;

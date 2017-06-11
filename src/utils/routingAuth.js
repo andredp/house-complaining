@@ -13,6 +13,7 @@ export const UserIsAuthenticated = UserAuthWrapper({
   wrapperDisplayName: 'UserIsAuthenticated',
 });
 
+/*
 export const UserIsAdmin = UserAuthWrapper({
   authSelector: state => getAuth(state),
   redirectAction: routerActions.replace,
@@ -21,6 +22,7 @@ export const UserIsAdmin = UserAuthWrapper({
   predicate: user => user.isAdmin,
   allowRedirectBack: false,
 });
+*/
 
 export const UserIsNotAuthenticated = UserAuthWrapper({
   authSelector: state => getAuth(state),

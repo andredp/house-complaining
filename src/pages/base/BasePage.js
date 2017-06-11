@@ -1,13 +1,24 @@
 // @flow
 import React from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import { push } from 'react-router-redux';
 import FontAwesome from 'react-fontawesome';
-import { Navbar, Nav, NavItem, NavLink, NavbarBrand, NavbarToggler, Collapse } from 'reactstrap';
-
+import {
+  Button,
+  Navbar,
+  Nav,
+  NavItem,
+  NavLink,
+  NavbarBrand,
+  NavbarToggler,
+  Collapse,
+} from 'reactstrap';
+import { logout } from '../../actions/auth';
 import './BasePage.css';
 
 type Props = {
-  +children: any,
+  children: any,
 };
 
 const BasePage = (props: Props) =>
@@ -25,6 +36,11 @@ class AppNavbar extends React.Component {
 
   toggle = () => {
     this.setState({ isOpen: !this.state.isOpen });
+  };
+
+  logout = () => {
+    this.props.logout();
+    this.props.push('/');
   };
 
   render = () =>
@@ -45,9 +61,19 @@ class AppNavbar extends React.Component {
           <NavItem>
             <NavLink tag={Link} to="/home">Home</NavLink>
           </NavItem>
+          <NavItem>
+            <Button onClick={this.logout}>Logout</Button>
+          </NavItem>
         </Nav>
       </Collapse>
     </Navbar>);
 }
+
+const mapDispatchToProps = {
+  logout,
+  push,
+};
+
+AppNavbar = connect(null, mapDispatchToProps)(AppNavbar);
 
 export default BasePage;
