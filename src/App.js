@@ -1,51 +1,32 @@
 // @flow
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Router, Route, browserHistory } from 'react-router';
-import { syncHistoryWithStore } from 'react-router-redux';
+import { Provider } from 'react-redux';
+import { Route } from 'react-router-dom';
+import { ConnectedRouter } from 'react-router-redux';
 import { UserIsAuthenticated, UserIsNotAuthenticated } from './utils/routingAuth';
 import LoginPage from './pages/login';
 import HomePage from './pages/home';
-import { validate } from './actions/auth';
+import * as authActions from './actions/auth';
 import LocalStorageAPI from './utils/LocalStorageAPI';
 
-type Props = {
-  validate: (token: string) => void,
-};
+import store, { history } from './store/configure-store';
 
-class App extends React.Component {
-  props: Props;
-  history: any;
-
-  componentWillMount() {
-    this.history = syncHistoryWithStore(browserHistory, this.context.store);
-  }
-
+export default class App extends React.Component {
   componentDidMount() {
     const token = LocalStorageAPI.getAuthToken();
     if (token) {
-      this.props.validate(token);
+      store.dispatch(authActions.validate(token));
     }
   }
 
-  render() {
-    return (
-      <Router history={this.history}>
-        <Route path="/" exact component={HomePage} />
-        <Route path="/home" component={UserIsAuthenticated(HomePage)} />
-        <Route path="/login" component={UserIsNotAuthenticated(LoginPage)} />
-      </Router>
-    );
-  }
-
-  static contextTypes = {
-    store: PropTypes.object.isRequired,
-  };
+  render = () =>
+    (<Provider store={store}>
+      <ConnectedRouter history={history}>
+        <div>
+          <Route path="/" exact component={HomePage} />
+          <Route path="/home" component={UserIsAuthenticated(HomePage)} />
+          <Route path="/login" component={UserIsNotAuthenticated(LoginPage)} />
+        </div>
+      </ConnectedRouter>
+    </Provider>);
 }
-
-const mapDispatchToProps = {
-  validate,
-};
-
-export default connect(null, mapDispatchToProps)(App);

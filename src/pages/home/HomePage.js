@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import { Button } from 'reactstrap';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import BasePage from '../base/BasePage';
 
 const HomePage = () =>

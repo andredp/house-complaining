@@ -2,13 +2,10 @@ import { UserAuthWrapper } from 'redux-auth-wrapper';
 import { routerActions } from 'react-router-redux';
 import { getAuth } from '../reducers';
 import * as fromAuth from '../reducers/auth';
-import Loading from '../components/login-loading';
 
 export const UserIsAuthenticated = UserAuthWrapper({
-  authSelector: state => getAuth(state),
-  authenticatingSelector: auth => fromAuth.getIsAuthenticating(auth),
-  predicate: auth => fromAuth.getIsAuthenticated(auth),
-  LoadingComponent: Loading,
+  authSelector: getAuth,
+  predicate: fromAuth.getIsAuthenticated,
   redirectAction: routerActions.replace,
   wrapperDisplayName: 'UserIsAuthenticated',
 });
@@ -24,11 +21,15 @@ export const UserIsAdmin = UserAuthWrapper({
 });
 */
 
+// FIXME: Keep on check if location.query is deprecated
+const guestRedirectPath = (state, { location }) =>
+  (location.query && location.query.redirect) || '/';
+
 export const UserIsNotAuthenticated = UserAuthWrapper({
-  authSelector: state => getAuth(state),
-  predicate: auth => !fromAuth.getIsAuthenticated(auth), // && !fromAuth.getIsAuthenticating(auth),
+  authSelector: getAuth,
+  predicate: auth => !fromAuth.getIsAuthenticated(auth),
   redirectAction: routerActions.replace,
-  wrapperDisplayName: 'UserIsNotAuthenticated',
-  failureRedirectPath: (state, ownProps) => ownProps.location.query.redirect || '/',
+  failureRedirectPath: guestRedirectPath,
   allowRedirectBack: false,
+  wrapperDisplayName: 'UserIsNotAuthenticated',
 });

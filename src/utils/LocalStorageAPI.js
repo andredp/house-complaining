@@ -36,15 +36,4 @@ export default class LocalStorageAPI {
   static removeAuthToken() {
     removeItem('auth.token');
   }
-
-  // Username (TODO: Ask to server?)
-  static getUsername(): ?string {
-    return getItem('auth.username');
-  }
-  static setUsername(token: string) {
-    setItem('auth.username', token);
-  }
-  static removeUsername() {
-    removeItem('auth.username');
-  }
 }
