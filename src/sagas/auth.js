@@ -1,5 +1,5 @@
 // @flow
-/* eslint-disable no-constant-condition */
+// $FlowFixMe
 import { put, call } from 'redux-saga/effects';
 import type { $AxiosXHR } from 'axios';
 import * as WebAPI from '../utils/WebAPI';
