@@ -1,6 +1,9 @@
+// @flow
 import Auth0Lock from 'auth0-lock';
+import * as authActions from '../actions/auth';
 import logo from './logo.svg';
 import lockImg from './lock.svg';
+import type { Action } from '../actions/types';
 
 const lockOptions = {
   auth: {
@@ -28,28 +31,29 @@ const lockOptions = {
   ],
 };
 
-export default function createAuth0Lock(dispatch) {
+export default function createAuth0Lock(dispatch: Action => void) {
   const clientID = process.env.REACT_APP_AUTH0_CLIENT_ID;
   const domain = process.env.REACT_APP_AUTH0_DOMAIN;
   const lock = new Auth0Lock(clientID, domain, lockOptions);
 
   // callbacks
-  lock.on('authenticated', (authResult) => {
-    dispatch({ type: 'AUTH_LOGIN_CALLBACK', payload: authResult });
+  lock.on('authenticated', (authResult: Object) => {
+    dispatch(authActions.loginCallback(authResult));
   });
 
-  lock.on('unrecoverable_error', (error) => {
-    dispatch({ type: 'AUTH_LOGIN_FAILED', payload: error });
+  lock.on('unrecoverable_error', () => {
+    throw new Error('Unimplemented.');
   });
 
-  lock.on('authorization_error', (error) => {
+  lock.on('authorization_error', () => {
+    throw new Error('Unimplemented.');
     // TODO: move inside the saga
-    lock.show({
+    /* lock.show({
       flashMessage: {
         type: 'error',
         text: error.error_description,
       },
-    });
+    });*/
   });
 
   lock.on('hide', () => {});
