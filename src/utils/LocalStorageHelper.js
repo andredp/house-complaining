@@ -25,15 +25,13 @@ function removeItem(key) {
   }
 }
 
-export default class LocalStorageAPI {
-  // Auth Token
-  static getAuthToken(): ?string {
-    return getItem('auth.token');
-  }
-  static setAuthToken(token: string) {
-    setItem('auth.token', token);
-  }
-  static removeAuthToken() {
-    removeItem('auth.token');
-  }
+// Auth Token
+export function getAuthToken(): ?string {
+  return getItem('auth_token');
+}
+export function setAuthToken(token: string) {
+  setItem('auth_token', token);
+}
+export function removeAuthToken() {
+  removeItem('auth_token');
 }

@@ -6,8 +6,9 @@
     "type": "git",
     "url": "git://github.com/andredp/house-app.git"
   },
-  "proxy": "http://192.168.1.66:8080",
   "dependencies": {
+    "auth0-js": "^8.7.0",
+    "auth0-lock": "^10.16.0",
     "axios": "^0.16.2",
     "bootstrap": "^4.0.0-alpha.6",
     "font-awesome": "^4.7.0",

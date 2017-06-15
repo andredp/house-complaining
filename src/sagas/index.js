@@ -1,14 +1,9 @@
-import { takeEvery, all } from 'redux-saga/effects';
+import { all } from 'redux-saga/effects';
 import { formSubmitSaga } from 'redux-form-submit-saga';
-import { authenticate, logout, validateToken } from './auth';
+import authSagas from './auth';
 
 function* rootSaga() {
-  yield all([
-    takeEvery('AUTH_VALIDATE', validateToken),
-    takeEvery('AUTH_LOGIN', authenticate),
-    takeEvery('AUTH_LOGOUT', logout),
-    formSubmitSaga(),
-  ]);
+  yield all([...authSagas, formSubmitSaga()]);
 }
 
 export default rootSaga;

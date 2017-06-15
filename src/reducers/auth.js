@@ -3,15 +3,15 @@ import { combineReducers } from 'redux';
 import type { Action } from '../actions/types';
 
 export type AuthState = {
-  +username: string,
-  +token: string,
+  +profile: string,
+  +idToken: string,
 };
 
-export const username = (state: string = '', action: Action): string => {
+export const profile = (state: string = '', action: Action): string => {
   switch (action.type) {
     case 'AUTH_LOGIN_SUCCESS':
     case 'AUTH_VALIDATE_SUCCESS':
-      return action.payload.username;
+      return action.payload.profile;
     case 'AUTH_VALIDATE_FAILED':
     case 'AUTH_LOGOUT':
       return '';
@@ -20,11 +20,11 @@ export const username = (state: string = '', action: Action): string => {
   }
 };
 
-export const token = (state: string = '', action: Action): string => {
+export const idToken = (state: string = '', action: Action): string => {
   switch (action.type) {
     case 'AUTH_LOGIN_SUCCESS':
     case 'AUTH_VALIDATE_SUCCESS':
-      return action.payload.token;
+      return action.payload.idToken;
     case 'AUTH_VALIDATE_FAILED':
     case 'AUTH_LOGOUT':
       return '';
@@ -34,11 +34,11 @@ export const token = (state: string = '', action: Action): string => {
 };
 
 export default combineReducers({
-  username,
-  token,
+  profile,
+  idToken,
 });
 
 // selectors
-export const getUsername = (state: AuthState): string => state.username;
-export const getToken = (state: AuthState): string => state.token;
-export const getIsAuthenticated = (state: AuthState): boolean => state.token !== '';
+export const getProfile = (state: AuthState): string => state.profile;
+export const getToken = (state: AuthState): string => state.idToken;
+export const getIsAuthenticated = (state: AuthState): boolean => state.idToken !== '';
