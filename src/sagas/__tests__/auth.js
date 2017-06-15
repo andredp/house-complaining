@@ -1,70 +1,67 @@
 import { expectSaga } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { throwError } from 'redux-saga-test-plan/providers';
-import { authenticate, logout, validateToken } from '../auth';
+import createAuth0Lock from '../../auth/Auth';
+import { showLock, loginCallback, logout } from '../auth';
+import * as localStorageHelper from '../../utils/localStorageHelper';
 import * as WebAPI from '../../utils/WebAPI';
-import LocalStorageAPI from '../../utils/LocalStorageAPI';
 
-const username = 'username';
-const password = 'password';
-const token = 'token';
-
-test('validateToken saga: success', () => {
-  const responseSuccess = { data: { access_token: token } };
-  return expectSaga(validateToken, { type: 'AUTH_VALIDATE', payload: token })
-    .provide([
-      [matchers.call.fn(WebAPI.validateAuthToken), responseSuccess],
-      [matchers.call.fn(WebAPI.getUsernameFromResponse), username],
-    ])
-    .put({ type: 'AUTH_VALIDATE_SUCCESS', payload: { token, username } })
-    .run();
+describe('showLock saga', () => {
+  const lock = createAuth0Lock();
+  it('should show the lock', () =>
+    expectSaga(showLock, lock)
+      .provide([[matchers.apply.fn(lock, lock.show)]])
+      .apply(lock, lock.show)
+      .run());
 });
 
-test('validateToken saga: invalid token', () => {
-  const responseError = { response: { data: {} } };
-  return expectSaga(validateToken, { type: 'AUTH_VALIDATE', payload: token })
-    .provide([
-      [matchers.call.fn(WebAPI.validateAuthToken), throwError(responseError)],
-      [matchers.call.fn(LocalStorageAPI.removeAuthToken)],
-    ])
-    .put.like({ action: { type: 'AUTH_VALIDATE_FAILED' } })
-    .run();
+describe('logincallback saga', () => {
+  const lock = createAuth0Lock();
+  const idToken = 'idToken';
+  const accessToken = 'accessToken';
+
+  it('should successfuly handle AUTH_LOGIN_CALLBACK', () => {
+    const profile = { name: 'name' };
+    return expectSaga(loginCallback, lock, { payload: { idToken, accessToken } })
+      .provide([
+        [matchers.cps.fn(lock.getUserInfo), profile],
+        [matchers.call.fn(localStorageHelper.setAuthToken)],
+        [matchers.call.fn(WebAPI.setAuthToken)],
+        [matchers.apply.fn(lock, lock.hide)],
+      ])
+      .cps([lock, lock.getUserInfo], accessToken)
+      .call(localStorageHelper.setAuthToken, idToken)
+      .call(WebAPI.setAuthToken, idToken)
+      .put({ type: 'AUTH_LOGIN_SUCCESS', payload: { profile, idToken } })
+      .apply(lock, lock.hide)
+      .run();
+  });
+
+  it('should handle an error on getUserInfo', () => {
+    const error = { error: 'error' };
+    return expectSaga(loginCallback, lock, { payload: { idToken, accessToken } })
+      .provide([
+        [matchers.cps.fn(lock.getUserInfo), throwError(error)],
+        [matchers.apply.fn(lock, lock.hide)],
+      ])
+      .cps([lock, lock.getUserInfo], accessToken)
+      .put({ type: 'AUTH_LOGIN_FAILED', payload: error })
+      .apply(lock, lock.hide)
+      .run();
+  });
 });
 
-test('authenticate saga: success', () => {
-  const responseSuccess = { data: { access_token: token } };
-  return expectSaga(authenticate, { type: 'AUTH_LOGIN', payload: { username, password } })
-    .provide([
-      [matchers.call.fn(WebAPI.authenticate), responseSuccess],
-      [matchers.call.fn(WebAPI.getAuthTokenFromResponse), token],
-      [matchers.call.fn(LocalStorageAPI.setAuthToken)],
-      [matchers.call.fn(WebAPI.setAuthToken)],
-    ])
-    .call(LocalStorageAPI.setAuthToken, token)
-    .call(WebAPI.setAuthToken, token)
-    .put({ type: 'AUTH_LOGIN_SUCCESS', payload: { token, username } })
-    .run();
+describe('logout saga', () => {
+  const lock = createAuth0Lock();
+  it('should cleanup and logout', () =>
+    expectSaga(logout, lock)
+      .provide([
+        [matchers.call.fn(localStorageHelper.removeAuthToken)],
+        [matchers.call.fn(WebAPI.removeAuthToken)],
+        [matchers.apply.fn(lock, lock.logout)],
+      ])
+      .call(localStorageHelper.removeAuthToken)
+      .call(WebAPI.removeAuthToken)
+      .apply(lock, lock.logout)
+      .run());
 });
-
-test('authenticate saga: wrong password', () => {
-  const errors = [{ error: 'error' }];
-  const responseError = { response: { data: errors } };
-
-  return expectSaga(authenticate, { type: 'AUTH_LOGIN', payload: { username, password } })
-    .provide([
-      [matchers.call.fn(WebAPI.authenticate), throwError(responseError)],
-      [matchers.call.fn(WebAPI.getAuthErrorsFromResponse), errors],
-    ])
-    .put({ type: 'AUTH_LOGIN_FAILED', payload: errors })
-    .run();
-});
-
-test('logout saga: success', () =>
-  expectSaga(logout)
-    .provide([
-      [matchers.call.fn(LocalStorageAPI.removeAuthToken)],
-      [matchers.call.fn(WebAPI.removeAuthToken)],
-    ])
-    .call(LocalStorageAPI.removeAuthToken)
-    .call(WebAPI.removeAuthToken)
-    .run());

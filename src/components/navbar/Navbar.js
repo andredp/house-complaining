@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { push } from 'react-router-redux';
 import { Button, Navbar, Nav, NavItem, NavLink, NavbarBrand } from 'reactstrap';
-import { loginRequest, logout } from '../../actions/auth';
+import { showLock, logout } from '../../actions/auth';
 
 type NavItemProps = {
   label: string,
@@ -18,7 +18,7 @@ const AppNavItem = ({ label, to }: NavItemProps) =>
 
 type NavbarProps = {
   logout: typeof logout,
-  loginRequest: typeof loginRequest,
+  showLock: typeof showLock,
   push: string => void,
 };
 
@@ -40,7 +40,7 @@ class AppNavbar extends React.Component {
         <Nav className="mr-auto" navbar>
           {navItems}
           <NavItem>
-            <Button onClick={this.props.loginRequest}>
+            <Button onClick={this.props.showLock}>
               Login
             </Button>
           </NavItem>
@@ -54,7 +54,7 @@ class AppNavbar extends React.Component {
 }
 
 const mapDispatchToProps = {
-  loginRequest,
+  showLock,
   logout,
   push,
 };

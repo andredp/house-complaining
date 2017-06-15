@@ -1,5 +1,4 @@
 import Auth0Lock from 'auth0-lock';
-import store from '../store/configure-store';
 import logo from './logo.svg';
 import lockImg from './lock.svg';
 
@@ -9,9 +8,9 @@ const lockOptions = {
     // https://auth0.com/forum/t/popup-login-window-is-not-closed-after-authentication/2843
     redirect: false,
   },
-  language: 'es',
+  language: 'en',
   languageDictionary: { title: 'House Complaining' },
-  allowSignup: JSON.parse(process.env.REACT_APP_AUTH0_ALLOW_SIGNUP),
+  allowSignup: process.env.REACT_APP_AUTH0_ALLOW_SIGNUP === 'true',
   theme: {
     logo,
     primaryColor: '#333',
@@ -29,21 +28,22 @@ const lockOptions = {
   ],
 };
 
-export default function createAuth0Lock() {
+export default function createAuth0Lock(dispatch) {
   const clientID = process.env.REACT_APP_AUTH0_CLIENT_ID;
   const domain = process.env.REACT_APP_AUTH0_DOMAIN;
   const lock = new Auth0Lock(clientID, domain, lockOptions);
 
+  // callbacks
   lock.on('authenticated', (authResult) => {
-    store.dispatch({ type: 'AUTH_LOGIN_CALLBACK', payload: authResult });
+    dispatch({ type: 'AUTH_LOGIN_CALLBACK', payload: authResult });
   });
 
   lock.on('unrecoverable_error', (error) => {
-    store.dispatch({ type: 'AUTH_LOGIN_FAILED', payload: error });
-    lock.hide();
+    dispatch({ type: 'AUTH_LOGIN_FAILED', payload: error });
   });
 
   lock.on('authorization_error', (error) => {
+    // TODO: move inside the saga
     lock.show({
       flashMessage: {
         type: 'error',
@@ -53,6 +53,8 @@ export default function createAuth0Lock() {
   });
 
   lock.on('hide', () => {});
+
+  lock.on('show', () => {});
 
   return lock;
 }

@@ -4,7 +4,7 @@ import type { Action } from '../actions/types';
 
 export type AuthState = {
   +profile: string,
-  +idToken: string,
+  +token: string,
 };
 
 export const profile = (state: string = '', action: Action): string => {
@@ -20,11 +20,11 @@ export const profile = (state: string = '', action: Action): string => {
   }
 };
 
-export const idToken = (state: string = '', action: Action): string => {
+export const token = (state: string = '', action: Action): string => {
   switch (action.type) {
     case 'AUTH_LOGIN_SUCCESS':
     case 'AUTH_VALIDATE_SUCCESS':
-      return action.payload.idToken;
+      return action.payload.token;
     case 'AUTH_VALIDATE_FAILED':
     case 'AUTH_LOGOUT':
       return '';
@@ -35,10 +35,10 @@ export const idToken = (state: string = '', action: Action): string => {
 
 export default combineReducers({
   profile,
-  idToken,
+  token,
 });
 
 // selectors
-export const getProfile = (state: AuthState): string => state.profile;
-export const getToken = (state: AuthState): string => state.idToken;
-export const getIsAuthenticated = (state: AuthState): boolean => state.idToken !== '';
+export const getProfile = (state: AuthState): Object => state.profile;
+export const getToken = (state: AuthState): Object => state.token;
+export const getIsAuthenticated = (state: AuthState): boolean => state.token !== {};

@@ -1,7 +1,7 @@
 // @flow
 import type { Action } from './types';
 
-export const loginRequest = (): Action => ({ type: 'AUTH_LOGIN_REQUEST' });
+export const showLock = (): Action => ({ type: 'AUTH_SHOW_LOCK' });
 export const logout = (): Action => ({ type: 'AUTH_LOGOUT' });
 
 export const authenticate = (username: string, password: string): Action => ({
