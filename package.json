@@ -30,7 +30,7 @@
     "redux-saga": "^0.15.3"
   },
   "devDependencies": {
-    "coveralls": "^2.13.1",
+    "codacy-coverage": "^2.0.2",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-babel": "^4.1.1",
