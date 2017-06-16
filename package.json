@@ -6,8 +6,9 @@
     "type": "git",
     "url": "git://github.com/andredp/house-app.git"
   },
-  "proxy": "http://192.168.1.66:8080",
   "dependencies": {
+    "auth0-js": "^8.7.0",
+    "auth0-lock": "^10.16.0",
     "axios": "^0.16.2",
     "bootstrap": "^4.0.0-alpha.6",
     "font-awesome": "^4.7.0",
@@ -29,6 +30,7 @@
     "redux-saga": "^0.15.3"
   },
   "devDependencies": {
+    "codacy-coverage": "^2.0.2",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-babel": "^4.1.1",

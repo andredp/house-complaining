@@ -1,38 +1,47 @@
 // @flow
 // $FlowFixMe
-import { put, call } from 'redux-saga/effects';
-import type { $AxiosXHR } from 'axios';
+import { put, apply, call, takeEvery, cps } from 'redux-saga/effects';
+import createAuth0Lock from '../auth/createAuth0Lock';
 import * as WebAPI from '../utils/WebAPI';
-import LocalStorageAPI from '../utils/LocalStorageAPI';
-import type { AuthLogin, AuthValidate } from '../actions/types';
+import * as localStorageHelper from '../utils/localStorageHelper';
+import * as authActions from '../actions/auth';
+import type { Action } from '../actions/types';
+import type { LoginCallback } from '../actions/auth';
 
-export function* validateToken(action: AuthValidate): Generator<*, *, *> {
+export function* showLock(lock: Object): Generator<*, *, *> {
+  yield apply(lock, lock.show);
+}
+
+export function* loginCallback(lock: Object, action: LoginCallback): Generator<*, *, *> {
+  const { idToken, accessToken } = action.payload;
   try {
-    const token = action.payload;
-    const response = yield call(WebAPI.validateAuthToken, token);
-    const username = yield call(WebAPI.getUsernameFromResponse, response);
-    yield put({ type: 'AUTH_VALIDATE_SUCCESS', payload: { token, username } });
+    // NOTE: https://github.com/redux-saga/redux-saga/issues/39
+    const profile = yield cps([lock, lock.getUserInfo], accessToken);
+    yield call(localStorageHelper.setAuthToken, idToken);
+    yield call(WebAPI.setAuthToken, idToken);
+    yield put(authActions.loginSuccess(action.payload, profile));
+    yield apply(lock, lock.hide); // Needed for popup mode
+    // TODO: Where to redirect the user?
+    // yield put(push('/'));
   } catch (error) {
-    yield call(LocalStorageAPI.removeAuthToken);
-    yield put({ type: 'AUTH_VALIDATE_FAILED', payload: 'Invalid token.' });
+    yield put(authActions.loginFailed(error));
+    yield apply(lock, lock.hide);
+    // TODO: Where to redirect the user?
+    // yield put(push('/'));
   }
 }
 
-export function* authenticate(action: AuthLogin): Generator<*, *, *> {
-  try {
-    const { username, password } = action.payload;
-    const response: $AxiosXHR<*> = yield call(WebAPI.authenticate, username, password);
-    const token: string = yield call(WebAPI.getAuthTokenFromResponse, response);
-    yield call(LocalStorageAPI.setAuthToken, token);
-    yield call(WebAPI.setAuthToken, token);
-    yield put({ type: 'AUTH_LOGIN_SUCCESS', payload: { token, username } });
-  } catch (error) {
-    const errors: Object = yield call(WebAPI.getAuthErrorsFromResponse, error);
-    yield put({ type: 'AUTH_LOGIN_FAILED', payload: errors });
-  }
-}
-
-export function* logout(): Generator<*, *, *> {
-  yield call(LocalStorageAPI.removeAuthToken);
+export function* logout(lock: Object): Generator<*, *, *> {
+  yield call(localStorageHelper.removeAuthToken);
   yield call(WebAPI.removeAuthToken);
+  yield apply(lock, lock.logout);
+}
+
+export default function createAuthSagas(dispatch: Action => void) {
+  const auth0Lock: Object = createAuth0Lock(dispatch);
+  return [
+    takeEvery(authActions.AUTH_SHOW_LOCK, showLock, auth0Lock),
+    takeEvery(authActions.AUTH_LOGIN_CALLBACK, loginCallback, auth0Lock),
+    takeEvery(authActions.AUTH_LOGOUT, logout, auth0Lock),
+  ];
 }
