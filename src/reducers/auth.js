@@ -39,4 +39,4 @@ export type AuthState = {
 export const getProfile = (state: AuthState): Object => state.profile;
 export const getToken = (state: AuthState): Object => state.token;
 export const getIdToken = (state: AuthState): string => state.token.idToken;
-export const getIsAuthenticated = (state: AuthState): boolean => state.token !== {};
+export const getIsAuthenticated = (state: AuthState): boolean => 'idToken' in state.token;

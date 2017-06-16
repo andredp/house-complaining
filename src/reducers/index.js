@@ -19,7 +19,8 @@ type State = {
 
 // auth selectors
 export const getAuth = (state: State): AuthState => state.auth;
-export const getProfile = (state: State): string => fromAuth.getProfile(state.auth);
-export const getAuthToken = (state: State): string => fromAuth.getToken(state.auth);
+export const getAuthProfile = (state: State): Object => fromAuth.getProfile(state.auth);
+export const getAuthToken = (state: State): Object => fromAuth.getToken(state.auth);
+export const getAuthIdToken = (state: State): string => fromAuth.getIdToken(state.auth);
 export const getIsAuthenticated = (state: State): boolean =>
   fromAuth.getIsAuthenticated(state.auth);
